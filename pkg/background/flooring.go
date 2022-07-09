@@ -18,13 +18,21 @@ const (
 	dirt   = "t"
 )
 
+//var spriteNameMap = map[string]string{
+//	grass:  "res/Sprout Lands - Sprites - premium pack/tilesets/Grass.png",
+//	hills:  "res/Sprout Lands - Sprites - premium pack/tilesets/Hills.png",
+//	fences: "res/Sprout Lands - Sprites - premium pack/tilesets/Building parts/Fences.png",
+//	houses: "res/Sprout Lands - Sprites - premium pack/tilesets/Building parts/Wooden House.png",
+//	water:  "res/Sprout Lands - Sprites - premium pack/tilesets/Water.png",
+//	dirt:   "res/Sprout Lands - Sprites - premium pack/tilesets/Tilled Dirt.png",
+//}
 var spriteNameMap = map[string]string{
-	grass:  "res/Sprout Lands - Sprites - premium pack/tilesets/Grass.png",
-	hills:  "res/Sprout Lands - Sprites - premium pack/tilesets/Hills.png",
-	fences: "res/Sprout Lands - Sprites - premium pack/tilesets/Building parts/Fences.png",
-	houses: "res/Sprout Lands - Sprites - premium pack/tilesets/Building parts/Wooden House.png",
-	water:  "res/Sprout Lands - Sprites - premium pack/tilesets/Water.png",
-	dirt:   "res/Sprout Lands - Sprites - premium pack/tilesets/Tilled Dirt.png",
+	grass:  "res/Sprout Lands - Sprites - Basic pack/Tilesets/Grass.png",
+	hills:  "res/Sprout Lands - Sprites - Basic pack/Tilesets/Hills.png",
+	fences: "res/Sprout Lands - Sprites - Basic pack/Tilesets/Fences.png",
+	houses: "res/Sprout Lands - Sprites - Basic pack/Tilesets/Wooden House.png",
+	water:  "res/Sprout Lands - Sprites - Basic pack/Tilesets/Water.png",
+	dirt:   "res/Sprout Lands - Sprites - Basic pack/Tilesets/Tilled Dirt.png",
 }
 
 var (
@@ -162,30 +170,17 @@ func getTiles(num int32, spriteKey string) (tiles, error) {
 		result = append(result, tile{texture: grassSprite, src: defaultSrc})
 	}
 
-	width := t.Width
+	w := t.Width / int32(defaultSrc.Width)
 
 	src := defaultSrc
-	src.X = float32((num-1)%width) * src.Width
-	src.Y = float32((num-1)/width) * src.Width
+	src.X = float32((num-1)%w) * defaultSrc.Width
+	src.Y = float32((num-1)/w) * defaultSrc.Height
+
+	//log.Printf("n: %d, w: %d, t.Width: %d, src.Width: %f, X: %f, Y: %f", num-1, w, t.Width, src.Width, src.X, src.Y)
 
 	result = append(result, tile{texture: t, src: src})
 
 	return result, nil
-}
-
-func getTexture(spriteKey string) (*rl.Texture2D, error) {
-	if s, ok := spriteMap[spriteKey]; ok {
-		return s, nil
-	}
-
-	if filename, ok := spriteNameMap[spriteKey]; ok {
-		t := rl.LoadTexture(filename)
-		spriteMap[spriteKey] = &t
-
-		return &t, nil
-	}
-
-	return nil, fmt.Errorf("sprite not found: %s", spriteKey)
 }
 
 func getNums(line string) ([]int32, error) {
@@ -213,4 +208,19 @@ func getSprites(line string) ([]string, error) {
 	}
 
 	return result, nil
+}
+
+func getTexture(spriteKey string) (*rl.Texture2D, error) {
+	if s, ok := spriteMap[spriteKey]; ok {
+		return s, nil
+	}
+
+	if filename, ok := spriteNameMap[spriteKey]; ok {
+		t := rl.LoadTexture(filename)
+		spriteMap[spriteKey] = &t
+
+		return &t, nil
+	}
+
+	return nil, fmt.Errorf("sprite not found: %s", spriteKey)
 }
